@@ -47,10 +47,6 @@ try {
   if (Array.isArray(saved)) saved.forEach(i => state.add(i));
 } catch {}
 
-// Demo preload if no saved state
-if (state.size === 0) {
-  [0, 1, 4, 6, 7, 10, 11, 14, 20, 22, 24, 27].forEach(i => state.add(i));
-}
 
 function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...state])); } catch {}

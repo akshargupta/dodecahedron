@@ -1,12 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dodecahedron — 3-Edge Coloring</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dodecahedron — 3-Edge Coloring Assembly Tracker</title>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <span class="brand-mark">Dodecahedron</span>
+        <span class="brand-sub">3-edge coloring · modular origami assembly tracker</span>
+      </div>
+      <nav class="top-links">
+        <a href="#">About</a>
+        <a href="#">Source</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Schlegel · input</span>
+          <span class="panel-hint">hover · tap to mark placed</span>
+        </div>
+        <div class="panel-body">
+          <svg id="schlegel" class="stage sch"
+               viewBox="-1.18 -1.18 2.36 2.36"
+               xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-header">
+          <span class="panel-title">3D · preview</span>
+          <span class="panel-hint">drag to rotate</span>
+        </div>
+        <div class="panel-body">
+          <svg id="three" class="stage three three-svg"
+               viewBox="-2.6 -2.6 5.2 5.2"
+               xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="progress">
+        <span class="progress-count">
+          <span id="count-done">0</span><span class="total">/30</span>
+          <span class="label">edges</span>
+        </span>
+        <div class="progress-bar" id="progress-bar">
+          <span class="pa" style="width: 0%"></span>
+          <span class="pb" style="width: 0%"></span>
+          <span class="pc" style="width: 0%"></span>
+        </div>
+        <div class="progress-breakdown" id="progress-breakdown">
+          <span class="bd-item"><span class="bd-dot c-a"></span><span data-color="0">0/10</span></span>
+          <span class="bd-item"><span class="bd-dot c-b"></span><span data-color="1">0/10</span></span>
+          <span class="bd-item"><span class="bd-dot c-c"></span><span data-color="2">0/10</span></span>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="btn-guide">Guide</button>
+        <button class="btn" id="btn-reset">Reset</button>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
 </html>

@@ -15,6 +15,7 @@
       <nav class="top-links">
         <a href="#">About</a>
         <a href="#">Source</a>
+        <button id="theme-toggle" aria-label="Toggle theme">&#9788;</button>
       </nav>
     </header>
 
@@ -67,6 +68,13 @@
     </footer>
   </div>
 
+  <script>
+    // Apply saved theme before first paint to prevent flash
+    (function() {
+      var saved = localStorage.getItem('dodec-theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

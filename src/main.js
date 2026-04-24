@@ -331,5 +331,28 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   render();
 });
 
+/* ==========================================================
+   Theme toggle
+   ========================================================== */
+const themeBtn = document.getElementById('theme-toggle');
+
+function isDark() {
+  const attr = document.documentElement.getAttribute('data-theme');
+  return attr === 'dark' || (!attr && window.matchMedia('(prefers-color-scheme: dark)').matches);
+}
+
+function updateThemeIcon() {
+  themeBtn.textContent = isDark() ? '\u263C' : '\u263E';
+}
+
+themeBtn.addEventListener('click', () => {
+  const next = isDark() ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('dodec-theme', next);
+  updateThemeIcon();
+});
+
+updateThemeIcon();
+
 // Initial paint
 render();

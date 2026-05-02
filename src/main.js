@@ -386,9 +386,89 @@ guideBtn.addEventListener('click', () => {
   render();
 });
 
+/* ==========================================================
+   Color customization
+   ========================================================== */
+const COLOR_STORAGE_KEY = 'dodec-colors';
+const SLOTS = ['a', 'b', 'c'];
+
+function applyColorOverrides(hexes) {
+  hexes.forEach((hex, i) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const root = document.documentElement.style;
+    root.setProperty(`--c-${SLOTS[i]}`, hex);
+    root.setProperty(`--c-${SLOTS[i]}-dim`, `rgba(${r}, ${g}, ${b}, 0.18)`);
+    root.setProperty(`--glow-${SLOTS[i]}`, `0 0 6px rgba(${r}, ${g}, ${b}, 0.55)`);
+  });
+}
+
+function clearColorOverrides() {
+  const root = document.documentElement.style;
+  SLOTS.forEach(s => {
+    root.removeProperty(`--c-${s}`);
+    root.removeProperty(`--c-${s}-dim`);
+    root.removeProperty(`--glow-${s}`);
+  });
+}
+
+(function loadColors() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(COLOR_STORAGE_KEY));
+    if (Array.isArray(saved) && saved.length === 3) applyColorOverrides(saved);
+  } catch {}
+})();
+
+function rgbToHex(rgb) {
+  const m = rgb.match(/\d+/g);
+  if (!m || m.length < 3) return '#000000';
+  return '#' + m.slice(0, 3)
+    .map(n => parseInt(n).toString(16).padStart(2, '0'))
+    .join('');
+}
+
+function currentHex(slot) {
+  const v = getComputedStyle(document.documentElement)
+    .getPropertyValue(`--c-${slot}`).trim();
+  return v.startsWith('#') ? v : rgbToHex(v);
+}
+
+function readSavedColors() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(COLOR_STORAGE_KEY));
+    if (Array.isArray(saved) && saved.length === 3) return saved;
+  } catch {}
+  return SLOTS.map(currentHex);
+}
+
+const dotInputs = [];
+document.querySelectorAll('.bd-dot').forEach((dot, i) => {
+  dot.style.position = 'relative';
+  dot.style.cursor = 'pointer';
+  dot.title = 'Click to change color';
+  const input = document.createElement('input');
+  input.type = 'color';
+  input.value = currentHex(SLOTS[i]);
+  input.style.cssText =
+    'position:absolute;inset:0;width:100%;height:100%;' +
+    'opacity:0;cursor:pointer;border:none;padding:0;background:none;';
+  input.addEventListener('input', (e) => {
+    const next = readSavedColors();
+    next[i] = e.target.value;
+    applyColorOverrides(next);
+    localStorage.setItem(COLOR_STORAGE_KEY, JSON.stringify(next));
+  });
+  dot.appendChild(input);
+  dotInputs.push(input);
+});
+
 document.getElementById('btn-reset').addEventListener('click', () => {
   state.clear();
   saveState();
+  clearColorOverrides();
+  localStorage.removeItem(COLOR_STORAGE_KEY);
+  dotInputs.forEach((input, i) => { input.value = currentHex(SLOTS[i]); });
   render();
 });
 

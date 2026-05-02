@@ -205,7 +205,7 @@ main {
 }
 .face.is-complete { opacity: 1; }
 
-.three-svg { cursor: grab; }
+.three-svg { cursor: grab; touch-action: none; }
 .three-svg:active { cursor: grabbing; }
 
 /* Footer */

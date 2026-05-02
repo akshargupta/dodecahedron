@@ -495,5 +495,80 @@ themeBtn.addEventListener('click', () => {
 
 updateThemeIcon();
 
+/* ==========================================================
+   Splash modal — first-load tour, replayable via Tour button
+   ========================================================== */
+const SPLASH_KEY = 'dodec-splash-seen';
+const SPLASH_STEPS = [
+  {
+    title: 'Welcome',
+    body: `<p>An assembly tracker for 30-unit modular origami dodecahedra with a proper 3-edge coloring.</p>
+           <img src="/schlegel-hero.svg" alt="3-edge colored dodecahedron" class="splash-hero" />`,
+  },
+  {
+    title: 'Mark edges as you build',
+    body: `<p>Click any edge in the Schlegel panel on the left to mark it as placed. Click again to undo.</p>`,
+  },
+  {
+    title: '3D preview',
+    body: `<p>The same model from any angle. Drag the right panel to rotate it as a reference while you fold.</p>`,
+  },
+  {
+    title: 'Guide',
+    body: `<p>Toggle <strong>Guide</strong> to highlight the next edge to fold. Suggestions prioritize closing open vertices, then completing faces.</p>`,
+  },
+  {
+    title: 'Custom colors',
+    body: `<p>Tap any of the three legend dots in the footer to match the actual paper colors of your build.</p>`,
+  },
+];
+
+const splashEl = document.getElementById('splash');
+const splashStepEl = document.getElementById('splash-step');
+const splashProgressEl = document.getElementById('splash-progress');
+const splashPrevBtn = document.getElementById('splash-prev');
+const splashNextBtn = document.getElementById('splash-next');
+const splashSkipBtn = document.getElementById('splash-skip');
+const tourBtn = document.getElementById('btn-tour');
+
+let splashIdx = 0;
+function renderSplashStep() {
+  const step = SPLASH_STEPS[splashIdx];
+  splashStepEl.innerHTML = `<h2>${step.title}</h2>${step.body}`;
+  splashProgressEl.textContent = `${splashIdx + 1} / ${SPLASH_STEPS.length}`;
+  splashPrevBtn.disabled = splashIdx === 0;
+  splashNextBtn.textContent = splashIdx === SPLASH_STEPS.length - 1 ? 'Get started' : 'Next';
+}
+function openSplash() {
+  splashIdx = 0;
+  splashEl.hidden = false;
+  renderSplashStep();
+}
+function closeSplash() {
+  splashEl.hidden = true;
+  localStorage.setItem(SPLASH_KEY, '1');
+}
+splashNextBtn.addEventListener('click', () => {
+  if (splashIdx < SPLASH_STEPS.length - 1) {
+    splashIdx++;
+    renderSplashStep();
+  } else {
+    closeSplash();
+  }
+});
+splashPrevBtn.addEventListener('click', () => {
+  if (splashIdx > 0) { splashIdx--; renderSplashStep(); }
+});
+splashSkipBtn.addEventListener('click', closeSplash);
+tourBtn.addEventListener('click', openSplash);
+document.addEventListener('keydown', (e) => {
+  if (splashEl.hidden) return;
+  if (e.key === 'Escape') closeSplash();
+  else if (e.key === 'ArrowRight') splashNextBtn.click();
+  else if (e.key === 'ArrowLeft' && splashIdx > 0) splashPrevBtn.click();
+});
+
+if (!localStorage.getItem(SPLASH_KEY)) openSplash();
+
 // Initial paint
 render();

@@ -266,6 +266,76 @@ footer {
   color: var(--fg); border-color: var(--fg); background: var(--surface-2);
 }
 
+/* ==========================================================
+   Splash modal
+   ========================================================== */
+.splash {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+.splash[hidden] { display: none; }
+.splash-card {
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 22px 24px;
+  max-width: 440px; width: 100%;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+.splash-card-header {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin-bottom: 18px;
+}
+.splash-mark { width: 18px; height: 18px; }
+.splash-step {
+  min-height: 280px;
+}
+.splash-step h2 {
+  font-size: 17px;
+  margin: 0 0 8px;
+  color: var(--fg);
+}
+.splash-step p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg-dim);
+  margin: 0 0 12px;
+}
+.splash-hero {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  margin: 14px auto 4px;
+}
+.splash-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+}
+.splash-progress {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+}
+.splash-nav { display: flex; gap: 8px; }
+.splash-nav .btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+.btn-link {
+  background: none; border: none; padding: 0;
+  color: var(--fg-dim);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.btn-link:hover { color: var(--fg); }
+
 @media (max-width: 820px) {
   body { overflow-y: auto; overflow-x: hidden; }
   .app { height: auto; min-height: 100vh; }

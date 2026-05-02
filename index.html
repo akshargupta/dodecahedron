@@ -64,9 +64,28 @@
       </div>
       <div class="controls">
         <button class="btn" id="btn-guide">Guide</button>
+        <button class="btn" id="btn-tour">Tour</button>
         <button class="btn" id="btn-reset">Reset</button>
       </div>
     </footer>
+  </div>
+
+  <div id="splash" class="splash" hidden>
+    <div class="splash-card" role="dialog" aria-modal="true" aria-labelledby="splash-title">
+      <header class="splash-card-header">
+        <img src="/favicon.svg" alt="" class="splash-mark" />
+        <span>Dodecahedron</span>
+      </header>
+      <div class="splash-step" id="splash-step"></div>
+      <footer class="splash-card-footer">
+        <button class="btn-link" id="splash-skip">Skip</button>
+        <span class="splash-progress" id="splash-progress"></span>
+        <div class="splash-nav">
+          <button class="btn" id="splash-prev">Back</button>
+          <button class="btn" id="splash-next">Next</button>
+        </div>
+      </footer>
+    </div>
   </div>
 
   <script>

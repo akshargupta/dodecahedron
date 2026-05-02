@@ -77,6 +77,43 @@ function faceEdgeIndices(face) {
   return idxs;
 }
 
+const FACE_EDGES = FACES.map((f, fi) => fi === 0 ? null : faceEdgeIndices(f));
+const EDGE_FACES = EDGES.map((_, i) =>
+  FACE_EDGES
+    .map((idxs, fi) => (idxs && idxs.includes(i)) ? fi : -1)
+    .filter(fi => fi !== -1)
+);
+
+function findSuggestedEdge() {
+  if (state.size >= EDGES.length) return null;
+  if (state.size === 0) return 0;
+
+  let best = -1;
+  let bestScore = -Infinity;
+  for (let i = 0; i < EDGES.length; i++) {
+    if (state.has(i)) continue;
+    const [u, v] = EDGES[i];
+    const cu = countCompletedAtVertex(u);
+    const cv = countCompletedAtVertex(v);
+    const vertexScore = Math.max(cu, cv);
+    const adjacency = (cu > 0 ? 1 : 0) + (cv > 0 ? 1 : 0);
+
+    let faceFullness = 0;
+    for (const fi of EDGE_FACES[i]) {
+      const placed = FACE_EDGES[fi].reduce(
+        (n, j) => n + (state.has(j) ? 1 : 0), 0);
+      if (placed > faceFullness) faceFullness = placed;
+    }
+
+    const score = 100 * vertexScore + 10 * faceFullness + adjacency;
+    if (score > bestScore) {
+      bestScore = score;
+      best = i;
+    }
+  }
+  return best;
+}
+
 /* ==========================================================
    Build Schlegel SVG
    ========================================================== */
@@ -196,11 +233,18 @@ function renderThree() {
 /* ==========================================================
    Animation + drag
    ========================================================== */
+let suggestedEdge = null;
 let lastT = performance.now();
 function tick(now) {
   const dt = Math.min(0.05, (now - lastT) / 1000);
   lastT = now;
   renderThree();
+  if (suggestedEdge != null) {
+    const phase = (Math.sin(now * 2 * Math.PI / 1400) + 1) / 2;
+    const opacity = 0.18 + (0.55 - 0.18) * phase;
+    schEdgeEls[suggestedEdge].style.opacity = opacity;
+    threeEdgeEls[suggestedEdge].style.opacity = opacity;
+  }
   requestAnimationFrame(tick);
 }
 requestAnimationFrame(tick);
@@ -238,10 +282,17 @@ threeSvg.addEventListener('pointercancel', endDrag);
 let hoveredEdge = null;
 
 function syncEdgeState() {
+  const next = guideOn ? findSuggestedEdge() : null;
+  if (suggestedEdge != null && suggestedEdge !== next) {
+    schEdgeEls[suggestedEdge].style.opacity = '';
+    threeEdgeEls[suggestedEdge].style.opacity = '';
+  }
+  suggestedEdge = next;
   schEdgeEls.forEach((el, i) => {
     const done = state.has(i);
     el.classList.toggle('state-done', done);
     el.classList.toggle('state-empty', !done);
+    el.classList.toggle('state-suggested', i === suggestedEdge);
     if (i === hoveredEdge && !done) el.classList.add('state-hover');
     else el.classList.remove('state-hover');
   });
@@ -249,6 +300,7 @@ function syncEdgeState() {
     const done = state.has(i);
     el.classList.toggle('state-done', done);
     el.classList.toggle('state-empty', !done);
+    el.classList.toggle('state-suggested', i === suggestedEdge);
     el.classList.toggle('state-hover', i === hoveredEdge);
   });
 }
@@ -318,11 +370,20 @@ schEdgeEls.forEach(el => {
    Controls
    ========================================================== */
 const guideBtn = document.getElementById('btn-guide');
-let guideOn = false;
-guideBtn.addEventListener('click', () => {
-  guideOn = !guideOn;
+const GUIDE_STORAGE_KEY = 'dodec-guide';
+let guideOn = localStorage.getItem(GUIDE_STORAGE_KEY) === '1';
+
+function applyGuideButton() {
   guideBtn.classList.toggle('is-active', guideOn);
   guideBtn.textContent = guideOn ? 'Guide on' : 'Guide';
+}
+applyGuideButton();
+
+guideBtn.addEventListener('click', () => {
+  guideOn = !guideOn;
+  localStorage.setItem(GUIDE_STORAGE_KEY, guideOn ? '1' : '0');
+  applyGuideButton();
+  render();
 });
 
 document.getElementById('btn-reset').addEventListener('click', () => {
